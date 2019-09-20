@@ -23,7 +23,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "listJobsEater/lambda.js",
-        "code": "let SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n    // You can pass the existing connection to this function.\n    // A new connection will be created if it's not present as the third param \n    // You must always end/destroy the DB connection after it's used\n    rds.query({\n        instanceIdentifier: 'main',\n        query: 'Select * from jobs;',\n        inserts: [0]\n    }, function (error, results, connection) {\n        if (error) {\n            console.log(\"Error occurred\");\n            throw error;\n        } else {\n            console.log(\"Success\")\n            console.log(results);\n        }\n\n        connection.end();\n    });\n\n    callback(null, { \"message\": \"Successfully executed\" });\n}",
+        "code": "let SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n    // You can pass the existing connection to this function.\n    // A new connection will be created if it's not present as the third param \n    // You must always end/destroy the DB connection after it's used\n    rds.query({\n        instanceIdentifier: 'main',\n        query: 'Select jobs.category, jobs.subcategory, jobs.duration, jobs.schedule_date, jobs.requested from jobs where userid = ? ORDER by DATE(schedule_date)',\n        inserts: [event.enhancedAuthContext.sub]\n    }, function (error, results, connection) {\n        if (error) {\n            console.log(\"Error occurred\");\n            throw error;\n        } else {\n            console.log(\"Success\")\n            console.log(results);\n             callback(null, { results} );\n        }\n\n        connection.end();\n    });\n\n   \n}",
         "config": {
           "runtime": "nodejs8.10",
           "handler": "handler",
@@ -35,8 +35,20 @@
           {
             "resourceName": "apigusEast1WazifalistJobsget",
             "config": {}
+          },
+          {
+            "resourceName": "apigusEast1WazifalistJobsget",
+            "config": {}
           }
-        ]
+        ],
+        "testCases": {
+          "20b5fb97-472d-4fe6-8071-76f3fe10d950": {
+            "id": "20b5fb97-472d-4fe6-8071-76f3fe10d950",
+            "name": "basic query",
+            "functionId": "f2810f3e-d8fc-43a7-bb37-33559aeef767",
+            "event": "{\n    \"enhancedAuthContext\": {\n        \"sub\" : \"c049c8b6-f5d7-4ebe-9014-62604654f8fb\"\n    }\n}"
+          }
+        }
       },
       "1de15b2d-272a-4b20-9f47-4f4eb184cd56": {
         "id": "1de15b2d-272a-4b20-9f47-4f4eb184cd56",
@@ -53,7 +65,8 @@
     "deletedFiles": [],
     "rootNode": "26b98c17-450e-4fd3-8e04-1be3906b2181",
     "openFiles": [
-      "f2810f3e-d8fc-43a7-bb37-33559aeef767"
+      "f2810f3e-d8fc-43a7-bb37-33559aeef767",
+      "1de15b2d-272a-4b20-9f47-4f4eb184cd56"
     ],
     "currentFileId": "f2810f3e-d8fc-43a7-bb37-33559aeef767",
     "resources": {
@@ -70,6 +83,7 @@
           "existingResources": {
             "/requestJob": "h1eulb",
             "/saveNotificationToken": "tcycdg",
+            "/subAndIdUpdate": "wxmwgy",
             "/": "xxsrbvmtg4"
           },
           "resourceMode": 0,
@@ -80,7 +94,7 @@
           "enableCORS": false,
           "stageMode": 1,
           "stageName": "Dev",
-          "stageDeploymentId": "awarn8",
+          "stageDeploymentId": "y8r8r9",
           "mode": 1
         }
       },
@@ -137,6 +151,14 @@
         "shouldPersist": false,
         "displayOnly": false,
         "editable": false
+      },
+      {
+        "lambdaId": "all",
+        "varKey": "Password_rdsMain",
+        "varValue": null,
+        "shouldPersist": false,
+        "displayOnly": false,
+        "editable": true
       }
     ],
     "packageJSON": {
@@ -158,7 +180,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1568729814890
+    "lastSave": 1569008511758
   },
   "VCS_STATE": {
     "provider": "GitHub",

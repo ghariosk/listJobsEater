@@ -9,8 +9,8 @@ exports.handler = function (event, context, callback) {
     // You must always end/destroy the DB connection after it's used
     rds.query({
         instanceIdentifier: 'main',
-        query: 'Select * from jobs;',
-        inserts: [0]
+        query: 'Select jobs.category, jobs.subcategory, jobs.duration, jobs.schedule_date, jobs.requested from jobs where userid = ? ORDER by DATE(schedule_date)',
+        inserts: [event.enhancedAuthContext.sub]
     }, function (error, results, connection) {
         if (error) {
             console.log("Error occurred");
@@ -18,10 +18,11 @@ exports.handler = function (event, context, callback) {
         } else {
             console.log("Success")
             console.log(results);
+             callback(null, { results} );
         }
 
         connection.end();
     });
 
-    callback(null, { "message": "Successfully executed" });
+   
 }
