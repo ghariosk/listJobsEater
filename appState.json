@@ -23,7 +23,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "listJobsEater/lambda.js",
-        "code": "let SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n    // You can pass the existing connection to this function.\n    // A new connection will be created if it's not present as the third param \n    // You must always end/destroy the DB connection after it's used\n    rds.query({\n        instanceIdentifier: 'main',\n        query: 'Select jobs.category, jobs.subcategory, jobs.duration, jobs.schedule_date, jobs.requested from jobs where userid = ? ORDER by DATE(schedule_date)',\n        inserts: [event.enhancedAuthContext.sub]\n    }, function (error, results, connection) {\n        if (error) {\n            console.log(\"Error occurred\");\n            throw error;\n        } else {\n            console.log(\"Success\")\n            console.log(results);\n             callback(null, { results} );\n        }\n\n        connection.end();\n    });\n\n   \n}",
+        "code": "let SL_AWS = require('slappforge-sdk-aws');\nlet connectionManager = require('./ConnectionManager');\nconst rds = new SL_AWS.RDS(connectionManager);\n\nexports.handler = function (event, context, callback) {\n\n    // You can pass the existing connection to this function.\n    // A new connection will be created if it's not present as the third param \n    // You must always end/destroy the DB connection after it's used\n    rds.query({\n        instanceIdentifier: 'main',\n        query: 'Select jobs.idjobs, jobs.category, jobs.subcategory, jobs.duration, jobs.schedule_date, jobs.requested from jobs where userid = ? ORDER by DATE(schedule_date)',\n        inserts: [event.enhancedAuthContext.sub]\n    }, function (error, results, connection) {\n        if (error) {\n            console.log(\"Error occurred\");\n            throw error;\n        } else {\n            console.log(\"Success\")\n            console.log(results);\n             callback(null, { results} );\n        }\n\n        connection.end();\n    });\n\n   \n}",
         "config": {
           "runtime": "nodejs8.10",
           "handler": "handler",
@@ -180,7 +180,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1569008511758
+    "lastSave": 1569044872676
   },
   "VCS_STATE": {
     "provider": "GitHub",
